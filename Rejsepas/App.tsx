@@ -6,6 +6,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import LoginScreen from './component/LoginScreen';
 import TermsScreen from './component/TermsScreen';
 import ProfileScreen from "./component/ProfileScreen";
+import StampScreen from "./component/StampScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -17,6 +18,7 @@ export default function App() {
                 <Stack.Screen name="LoginScreen" component={LoginScreen} />
                 <Stack.Screen name="TermsScreen" component={TermsScreen} />
                 <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
+                <Stack.Screen name="StampScreen" component={StampScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );

@@ -1,31 +1,31 @@
 import React from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import ScreenWrapper from "../wrapperfolder/ScreenWrapper";
+import LoginScreen from "./LoginScreen";
 
 const stamps = [
-    {id: 1, status: "✔", place: "Delhi, India", issue: new Date().toLocaleDateString(), expiry: new Date().toLocaleDateString()},
-    {id: 2, status: "✗", place: "Delhi, India", issue: new Date().toLocaleDateString(), expiry: new Date().toLocaleDateString()},
-    {id: 3, status: "✔", place: "Delhi, India", issue: new Date().toLocaleDateString(), expiry: new Date().toLocaleDateString()},
+    { id: 1, status: "✔", place: "Delhi, India", issue: "12/12/2023", expiry: "12/12/2025" },
+    { id: 2, status: "✗", place: "Delhi, India", issue: "01/01/2022", expiry: "01/01/2023" },
+    { id: 3, status: "✔", place: "Mumbai, India", issue: "15/08/2020", expiry: "15/08/2024" },
 ];
 
-const renderItem = ({item}) => {
-    return(
-        <View style={styles.pageContainer}>
-            <Text style={styles.text}>ID: {item.id}</Text>
-            <Text style={styles.text}>Status: {item.status}</Text>
-            <Text style={styles.text}>Place: {item.place}</Text>
-            <Text style={styles.text}>Issue Date: {item.issue}</Text>
-            <Text style={styles.text}>Expiry Date: {item.expiry}</Text>
-        </View>
-    )
-};
 const StampScreen = () => {
-    return(
-        <View style={styles.pageContainer}>
-            <FlatList data={stamps} renderItem={renderItem} keyExtractor={(item) => item.id.toString()}/>
-            <TouchableOpacity style={styles.buttonContainer}>
-                <Text style={styles.buttonText}>NEXT PAGE</Text>
-            </TouchableOpacity>
-        </View>
+    return (
+        <ScreenWrapper>
+            <View style={styles.pageContainer}>
+                {stamps.map((stamp) => (
+                    <View key={stamp.id} style={styles.stampContainer}>
+                        <Text style={styles.text}>Status: {stamp.status}</Text>
+                        <Text style={styles.text}>Place: {stamp.place}</Text>
+                        <Text style={styles.text}>Issue Date: {stamp.issue}</Text>
+                        <Text style={styles.text}>Expiry Date: {stamp.expiry}</Text>
+                    </View>
+                ))}
+                <TouchableOpacity style={styles.buttonContainer} onPress={LoginScreen}>
+                    <Text style={styles.buttonText}>NEXT PAGE</Text>
+                </TouchableOpacity>
+            </View>
+        </ScreenWrapper>
     );
 };
 
@@ -36,11 +36,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 20,
     },
-    itemContainer: {
-        backgroundColor: 'white',
+    stampContainer: {
+        backgroundColor: '#f9f9f9',
         padding: 10,
         marginVertical: 8,
         borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ccc',
     },
     text: {
         fontSize: 14,
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
     buttonContainer: {
         backgroundColor: '#330099',
         padding: 10,
-        borderRadius: '10',
+        borderRadius: 5,
         alignItems: 'center',
         marginTop: 20,
     },
@@ -60,4 +62,5 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
 });
+
 export default StampScreen;

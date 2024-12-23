@@ -8,7 +8,7 @@ const TermsScreen = ({navigation}: any) => {
             <View style={styles.pageContainer}>
                 <Text style={styles.title}>Terms</Text>
                 <Text style={styles.content}>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')} style={styles.acceptButton}>
+                <TouchableOpacity onPress={() => navigation.navigate(ProfileScreen)} style={styles.acceptButton}>
                     <Text style={styles.buttonText}>I ACCEPT</Text>
                 </TouchableOpacity>
             </View>

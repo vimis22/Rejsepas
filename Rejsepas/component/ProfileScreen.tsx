@@ -1,8 +1,9 @@
 import React from 'react';
 import { TextInput, Text, View, StyleSheet, TouchableOpacity } from "react-native";
 import ScreenWrapper from "../wrapperfolder/ScreenWrapper";
+import StampScreen from "./StampScreen";
 
-const ProfilePage = ({ navigation }: any) => {
+const ProfileScreen = ({ navigation }: any) => {
     const fields = [
         { label: "Passport Number", placeholder: "********" },
         { label: "Country", placeholder: "********" },
@@ -24,6 +25,9 @@ const ProfilePage = ({ navigation }: any) => {
                     <Text style={styles.label}>Vivek</Text>
                     <Text style={styles.labelBold}>Lastname</Text>
                     <Text style={styles.label}>Misra</Text>
+                    <TouchableOpacity style={styles.button} onPress={() => navigation.navigate(StampScreen)}>
+                        <Text style={styles.buttonText}>Go to StampScreen</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -31,7 +35,7 @@ const ProfilePage = ({ navigation }: any) => {
                         <View key={index} style={[styles.inputGroup, field.short ? styles.shortInputGroup : {},]}>
                             <Text style={styles.label}>{field.label}</Text>
                             <TextInput style={[styles.input, field.short ? styles.shortInput : {},]} placeholder={field.placeholder}
-                                secureTextEntry={field.label === "CPR-Number"}
+                                       secureTextEntry={field.label === "CPR-Number"}
                             />
                         </View>
                     ))}
@@ -40,8 +44,8 @@ const ProfilePage = ({ navigation }: any) => {
 
             <View style={styles.navbar}>
                 {["\u{1F464}", "\u{1F4D3}", "\u{1F4F0}", "\u{2699}"].map((icon, index) => (
-                    <TouchableOpacity key={index} style={styles.navButton}>
-                        <Text style={styles.navText}>{icon}</Text>
+                    <TouchableOpacity key={index} style={styles.button}>
+                        <Text style={styles.buttonText}>{icon}</Text>
                     </TouchableOpacity>
                 ))}
             </View>
@@ -109,19 +113,22 @@ const styles = StyleSheet.create({
         width: '100%',
         textAlign: 'center',
     },
+    button: {
+        backgroundColor: '#330099',
+        padding: 10,
+        borderRadius: 5,
+        marginVertical: 10,
+    },
+    buttonText: {
+        color: 'white',
+        fontWeight: 'bold',
+    },
     navbar: {
         flexDirection: 'row',
         justifyContent: 'space-around',
         backgroundColor: '#003399',
         padding: 10,
     },
-    navButton: {
-        alignItems: 'center',
-    },
-    navText: {
-        fontSize: 20,
-        color: 'white',
-    },
 });
 
-export default ProfilePage;
+export default ProfileScreen;
