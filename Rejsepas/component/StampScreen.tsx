@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import ScreenWrapper from "../wrapperfolder/ScreenWrapper";
-import LoginScreen from "./LoginScreen";
+import SettingsScreen from "./SettingsScreen";
 
 const stamps = [
     { id: 1, status: "✔", place: "Delhi, India", issue: "12/12/2023", expiry: "12/12/2025" },
@@ -9,7 +9,7 @@ const stamps = [
     { id: 3, status: "✔", place: "Mumbai, India", issue: "15/08/2020", expiry: "15/08/2024" },
 ];
 
-const StampScreen = () => {
+const StampScreen = ({navigation}: any) => {
     return (
         <ScreenWrapper>
             <View style={styles.pageContainer}>
@@ -21,7 +21,7 @@ const StampScreen = () => {
                         <Text style={styles.text}>Expiry Date: {stamp.expiry}</Text>
                     </View>
                 ))}
-                <TouchableOpacity style={styles.buttonContainer} onPress={LoginScreen}>
+                <TouchableOpacity style={styles.buttonContainer} onPress={() => navigation.navigate(SettingsScreen)}>
                     <Text style={styles.buttonText}>NEXT PAGE</Text>
                 </TouchableOpacity>
             </View>

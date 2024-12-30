@@ -1,15 +1,14 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import LoginScreen from './component/LoginScreen';
 import TermsScreen from './component/TermsScreen';
 import ProfileScreen from "./component/ProfileScreen";
 import StampScreen from "./component/StampScreen";
+import SettingsScreen from "./component/SettingsScreen";
 
 const Stack = createStackNavigator();
-const Tab = createBottomTabNavigator();
 
 export default function App() {
     return (
@@ -19,6 +18,7 @@ export default function App() {
                 <Stack.Screen name="TermsScreen" component={TermsScreen} />
                 <Stack.Screen name="ProfileScreen" component={ProfileScreen}/>
                 <Stack.Screen name="StampScreen" component={StampScreen}/>
+                <Stack.Screen name="SettingsScreen" component={SettingsScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
