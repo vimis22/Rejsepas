@@ -1,9 +1,25 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 import { Navbar } from '../components/Navbar';
 import { Mail, Phone } from 'lucide-react-native';
+import { useUserProfile } from '../hooks/useUserProfile';
 
 export const ContactInfoScreen = ({ navigation }: any) => {
+  const { profile, loading } = useUserProfile();
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Navbar title="Contact Info" onBack={() => navigation.goBack()} />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#0047AB" />
+        </View>
+      </View>
+    );
+  }
+
+  const fallback = "Ikke angivet";
+
   return (
     <View style={styles.container}>
       <Navbar title="Contact Info" onBack={() => navigation.goBack()} />
@@ -13,7 +29,7 @@ export const ContactInfoScreen = ({ navigation }: any) => {
             <Mail size={24} color="#0047AB" />
             <View style={styles.textContainer}>
               <Text style={styles.label}>Email Address</Text>
-              <Text style={styles.value}>support@passtrax.com</Text>
+              <Text style={styles.value}>{profile?.email || fallback}</Text>
             </View>
           </View>
           
@@ -21,14 +37,14 @@ export const ContactInfoScreen = ({ navigation }: any) => {
             <Phone size={24} color="#0047AB" />
             <View style={styles.textContainer}>
               <Text style={styles.label}>Phone Number</Text>
-              <Text style={styles.value}>+45 12 34 56 78</Text>
+              <Text style={styles.value}>{profile?.phoneNumber || fallback}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            Our support team is available Monday to Friday, 9:00 - 17:00.
+            Your contact information is used for travel notifications and security verification.
           </Text>
         </View>
       </View>
@@ -82,5 +98,10 @@ const styles = StyleSheet.create({
     color: '#999',
     textAlign: 'center',
     lineHeight: 20,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

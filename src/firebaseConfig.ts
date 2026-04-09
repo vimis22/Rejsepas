@@ -1,8 +1,15 @@
-import { initializeApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { 
+  initializeAuth, 
+  getReactNativePersistence, 
+  getAuth, 
+  browserLocalPersistence, 
+  setPersistence 
+} from "firebase/auth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
+import { Platform } from "react-native";
 
 // Firebase configuration from google-services.json
 // Note: For Expo, these are typically provided via environment variables in production,
@@ -17,12 +24,21 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
-// Initialize Firebase services with React Native persistence
-export const auth = initializeAuth(app, {
-  persistence: getReactNativePersistence(AsyncStorage)
-});
+// Initialize Firebase services with platform-specific persistence
+let auth;
+
+if (Platform.OS === 'web') {
+  auth = getAuth(app);
+  // Web uses browserLocalPersistence by default, but we can be explicit if needed
+} else {
+  auth = initializeAuth(app, {
+    persistence: getReactNativePersistence(AsyncStorage)
+  });
+}
+
+export { auth };
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 

@@ -59,6 +59,7 @@ export const createDefaultProfile = async (uid: string, email?: string): Promise
     countryCode: 'DNK',
     passportStatus: 'ACTIVE',
     email: email,
+    phoneNumber: '',
     createdAt: now.toISOString(),
     updatedAt: now.toISOString(),
     visas: [defaultVisa],

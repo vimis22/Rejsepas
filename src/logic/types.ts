@@ -11,6 +11,7 @@ export interface Profile {
   countryCode: string;
   passportStatus: string;
   email?: string;
+  phoneNumber?: string;
   createdAt?: string;
   updatedAt?: string;
 }

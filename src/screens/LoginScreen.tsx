@@ -15,6 +15,7 @@ export const LoginScreen = ({ navigation }: any) => {
   const [cprNumber, setCprNumber] = useState('');
   const [passportNumber, setPassportNumber] = useState('');
   const [citizenship, setCitizenship] = useState('Dansk');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -43,7 +44,7 @@ export const LoginScreen = ({ navigation }: any) => {
   };
 
   const handleRegister = async () => {
-    if (!email || !password || !firstName || !surname || !dateOfBirth || !cprNumber || !passportNumber || !citizenship) {
+    if (!email || !password || !firstName || !surname || !dateOfBirth || !cprNumber || !passportNumber || !citizenship || !phoneNumber) {
       Alert.alert('Error', 'Please fill in all passport information and account details.');
       return;
     }
@@ -103,6 +104,7 @@ export const LoginScreen = ({ navigation }: any) => {
         countryCode: 'DNK',
         passportStatus: 'ACTIVE',
         email: email.trim(),
+        phoneNumber,
         createdAt: now.toISOString(),
         updatedAt: now.toISOString(),
         visas: [defaultVisa],
@@ -221,6 +223,16 @@ export const LoginScreen = ({ navigation }: any) => {
                     />
                   </View>
                 </View>
+
+                <Text style={styles.label}>Phone Number</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="+45 12 34 56 78"
+                  value={phoneNumber}
+                  onChangeText={setPhoneNumber}
+                  keyboardType="phone-pad"
+                  editable={!loading}
+                />
 
                 <Text style={styles.sectionHeader}>Account Details</Text>
               </>
