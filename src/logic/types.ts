@@ -3,9 +3,39 @@ export interface Profile {
   surname: string;
   dateOfBirth: string;
   cprNumber: string;
-  passportStartDate: string;
-  passportEndDate: string;
+  passportNumber: string;
+  citizenship: string;
+  validFrom: string;
+  validUntil: string;
+  passportType: string;
+  countryCode: string;
+  passportStatus: string;
+  email?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Visa {
+  id: string;
   country: string;
   flag: string;
-  passportNumber: string;
+  startDate: string;
+  endDate: string;
+  status: 'Active' | 'Expired' | 'Pending' | 'VALID' | 'ACTIVE';
+  statusColor?: string;
+}
+
+export interface Record {
+  id: string;
+  country: string;
+  flag: string;
+  airport: string;
+  date: string;
+  type: 'Arrival' | 'Departure';
+  status?: string;
+}
+
+export interface UserData extends Profile {
+  visas?: Visa[];
+  records?: Record[];
 }

@@ -11,8 +11,8 @@ interface VisaCardProps {
 
 export const VisaCard: React.FC<VisaCardProps> = ({ country, flag, startDate, endDate, status }) => {
   const getStatusColor = () => {
+    if (status === 'ACTIVE' || status === 'VALID' || status === 'Active') return '#4CD964';
     switch (status) {
-      case 'Active': return '#4CD964';
       case 'Expired': return '#FF3B30';
       default: return '#FFCC00';
     }

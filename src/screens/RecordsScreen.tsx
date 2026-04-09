@@ -1,15 +1,32 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, Text } from 'react-native';
+import { View, StyleSheet, FlatList, Text, ActivityIndicator } from 'react-native';
 import { Navbar } from '../components/Navbar';
 import { RecordCard } from '../components/RecordCard';
-import { MOCK_RECORDS } from '../logic/mockData';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { UserData } from '../logic/types';
 
 export const RecordsScreen = () => {
+  const { profile, loading } = useUserProfile();
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Navbar title="Travel Records" />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#0047AB" />
+        </View>
+      </View>
+    );
+  }
+
+  const userData = profile as UserData;
+  const records = userData?.records || [];
+
   return (
     <View style={styles.container}>
       <Navbar title="Travel Records" />
       <FlatList
-        data={MOCK_RECORDS}
+        data={records}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
@@ -40,5 +57,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     color: '#888',
     fontSize: 16,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

@@ -1,15 +1,32 @@
 import React from 'react';
-import { View, StyleSheet, FlatList, Text } from 'react-native';
+import { View, StyleSheet, FlatList, Text, ActivityIndicator } from 'react-native';
 import { Navbar } from '../components/Navbar';
 import { VisaCard } from '../components/VisaCard';
-import { MOCK_VISAS } from '../logic/mockData';
+import { useUserProfile } from '../hooks/useUserProfile';
+import { UserData } from '../logic/types';
 
 export const VisaScreen = () => {
+  const { profile, loading, error } = useUserProfile();
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <Navbar title="Mine Visa" />
+        <View style={styles.centered}>
+          <ActivityIndicator size="large" color="#0047AB" />
+        </View>
+      </View>
+    );
+  }
+
+  const userData = profile as UserData;
+  const visas = userData?.visas || [];
+
   return (
     <View style={styles.container}>
-      <Navbar title="My Visas" />
+      <Navbar title="Mine Visa" />
       <FlatList
-        data={MOCK_VISAS}
+        data={visas}
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.listContent}
         renderItem={({ item }) => (
@@ -21,7 +38,7 @@ export const VisaScreen = () => {
             status={item.status}
           />
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No visas found.</Text>}
+        ListEmptyComponent={<Text style={styles.empty}>Ingen visa fundet.</Text>}
       />
     </View>
   );
@@ -40,5 +57,10 @@ const styles = StyleSheet.create({
     marginTop: 40,
     color: '#888',
     fontSize: 16,
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

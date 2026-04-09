@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, StyleSheet, SafeAreaView, KeyboardAvoidingView, Platform, Alert, TouchableOpacity, ScrollView } from 'react-native';
 import { Button } from '../components/Button';
 import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
+import { saveProfile } from '../services/userProfile';
+import { Profile, UserData, Visa, Record } from '../logic/types';
 
 export const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [surname, setSurname] = useState('');
+  const [dateOfBirth, setDateOfBirth] = useState('');
+  const [cprNumber, setCprNumber] = useState('');
+  const [passportNumber, setPassportNumber] = useState('');
+  const [citizenship, setCitizenship] = useState('Dansk');
   const [loading, setLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
@@ -35,8 +43,8 @@ export const LoginScreen = ({ navigation }: any) => {
   };
 
   const handleRegister = async () => {
-    if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+    if (!email || !password || !firstName || !surname || !dateOfBirth || !cprNumber || !passportNumber || !citizenship) {
+      Alert.alert('Error', 'Please fill in all passport information and account details.');
       return;
     }
 
@@ -47,7 +55,62 @@ export const LoginScreen = ({ navigation }: any) => {
 
     setLoading(true);
     try {
-      await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+      const uid = userCredential.user.uid;
+      
+      const now = new Date();
+      const validFromDate = now.toLocaleDateString('da-DK');
+      const future = new Date(now.getFullYear() + 10, now.getMonth(), now.getDate());
+      const validUntilDate = future.toLocaleDateString('da-DK');
+
+      // Random date for initial record
+      const randomDays = Math.floor(Math.random() * 30);
+      const departureDate = new Date();
+      departureDate.setDate(now.getDate() + randomDays);
+      const departureDateStr = departureDate.toLocaleDateString('da-DK');
+
+      const defaultVisa: Visa = {
+        id: 'default-visa',
+        country: citizenship, // Use user's citizenship for the visa country
+        flag: citizenship === 'Dansk' ? '🇩🇰' : '🌍', // Basic mapping
+        startDate: validFromDate,
+        endDate: validUntilDate,
+        status: 'ACTIVE',
+        statusColor: 'green'
+      };
+
+      const defaultRecord: Record = {
+        id: 'default-record',
+        country: 'Danmark',
+        flag: '🇩🇰',
+        airport: 'Danske Lufthavne',
+        date: departureDateStr,
+        type: 'Departure',
+        status: 'ACTIVE'
+      };
+
+      // Create full profile during signup
+      const fullProfile: UserData = {
+        firstName,
+        surname,
+        dateOfBirth,
+        cprNumber,
+        passportNumber,
+        citizenship,
+        validFrom: validFromDate,
+        validUntil: validUntilDate,
+        passportType: 'P',
+        countryCode: 'DNK',
+        passportStatus: 'ACTIVE',
+        email: email.trim(),
+        createdAt: now.toISOString(),
+        updatedAt: now.toISOString(),
+        visas: [defaultVisa],
+        records: [defaultRecord]
+      };
+      
+      await saveProfile(uid, fullProfile);
+
       Alert.alert('Success', 'Account created successfully!');
       navigation.replace('MainTabs');
     } catch (error: any) {
@@ -68,55 +131,138 @@ export const LoginScreen = ({ navigation }: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {isRegistering && (
+        <TouchableOpacity 
+          style={styles.backButton} 
+          onPress={() => setIsRegistering(false)}
+          disabled={loading}
+        >
+          <Text style={styles.backButtonText}>← Back to Login</Text>
+        </TouchableOpacity>
+      )}
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.inner}
       >
-        <View style={styles.logoContainer}>
-          <View style={styles.logoCircle}>
-             <Text style={styles.logoText}>RP</Text>
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.logoContainer}>
+            <View style={styles.logoCircle}>
+               <Text style={styles.logoText}>RP</Text>
+            </View>
+            <Text style={styles.appName}>Rejsepas</Text>
+            <Text style={styles.tagline}>Your Travel Companion</Text>
           </View>
-          <Text style={styles.appName}>Rejsepas</Text>
-          <Text style={styles.tagline}>Your Travel Companion</Text>
-        </View>
 
-        <View style={styles.form}>
-          <Text style={styles.label}>Email Address</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="example@email.com"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-            editable={!loading}
-          />
+          <View style={styles.form}>
+            {isRegistering && (
+              <>
+                <Text style={styles.sectionHeader}>Passport Information</Text>
+                
+                <Text style={styles.label}>First Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="John"
+                  value={firstName}
+                  onChangeText={setFirstName}
+                  editable={!loading}
+                />
 
-          <Text style={styles.label}>Password</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="********"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-            editable={!loading}
-          />
+                <Text style={styles.label}>Surname</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Doe"
+                  value={surname}
+                  onChangeText={setSurname}
+                  editable={!loading}
+                />
 
-          <Button 
-            title={isRegistering ? "Create Account" : "Login"} 
-            onPress={isRegistering ? handleRegister : handleLogin} 
-            style={styles.loginBtn}
-            loading={loading}
-          />
-          
-          <TouchableOpacity onPress={() => setIsRegistering(!isRegistering)} disabled={loading}>
-            <Text style={styles.toggleText}>
-              {isRegistering ? "Already have an account? Login" : "Don't have an account? Sign Up"}
-            </Text>
-          </TouchableOpacity>
+                <View style={styles.row}>
+                  <View style={styles.flex1}>
+                    <Text style={styles.label}>Date of Birth</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="01/01/1990"
+                      value={dateOfBirth}
+                      onChangeText={setDateOfBirth}
+                      editable={!loading}
+                    />
+                  </View>
+                  <View style={[styles.flex1, { marginLeft: 12 }]}>
+                    <Text style={styles.label}>CPR Number</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="010190-1234"
+                      value={cprNumber}
+                      onChangeText={setCprNumber}
+                      editable={!loading}
+                    />
+                  </View>
+                </View>
 
-          {!isRegistering && <Text style={styles.forgot}>Forgot Password?</Text>}
-        </View>
+                <View style={styles.row}>
+                  <View style={styles.flex1}>
+                    <Text style={styles.label}>Passport Number</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="DK12345678"
+                      value={passportNumber}
+                      onChangeText={setPassportNumber}
+                      editable={!loading}
+                    />
+                  </View>
+                  <View style={[styles.flex1, { marginLeft: 12 }]}>
+                    <Text style={styles.label}>Citizenship</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder="Dansk"
+                      value={citizenship}
+                      onChangeText={setCitizenship}
+                      editable={!loading}
+                    />
+                  </View>
+                </View>
+
+                <Text style={styles.sectionHeader}>Account Details</Text>
+              </>
+            )}
+
+            <Text style={styles.label}>Email Address</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="example@email.com"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              editable={!loading}
+            />
+
+            <Text style={styles.label}>Password</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="********"
+              value={password}
+              onChangeText={setPassword}
+              secureTextEntry
+              editable={!loading}
+            />
+
+            <Button 
+              title={isRegistering ? "Create Account" : "Login"} 
+              onPress={isRegistering ? handleRegister : handleLogin} 
+              style={styles.loginBtn}
+              loading={loading}
+            />
+            
+            <TouchableOpacity onPress={() => setIsRegistering(!isRegistering)} disabled={loading}>
+              <Text style={styles.toggleText}>
+                {isRegistering ? "Already have an account? Login" : "Don't have an account? Sign Up"}
+              </Text>
+            </TouchableOpacity>
+
+            {!isRegistering && <Text style={styles.forgot}>Forgot Password?</Text>}
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -192,5 +338,33 @@ const styles = StyleSheet.create({
     marginTop: 16,
     color: '#0047AB',
     fontWeight: '500',
+  },
+  scrollContent: {
+    paddingVertical: 40,
+  },
+  backButton: {
+    padding: 16,
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 10,
+    left: 10,
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: '#0047AB',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  sectionHeader: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#0047AB',
+    marginTop: 24,
+    marginBottom: 16,
+  },
+  row: {
+    flexDirection: 'row',
+  },
+  flex1: {
+    flex: 1,
   },
 });
