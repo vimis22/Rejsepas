@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "569377069277",
+    "project_id": "rejsepas",
+    "storage_bucket": "rejsepas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:569377069277:android:ab07906bd5fbd71743a334",
+        "android_client_info": {
+          "package_name": "com.vimisdata.rejsepas"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB7KIzrGg53mxQlUWK0v8OsbQsl39fd4Mc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
