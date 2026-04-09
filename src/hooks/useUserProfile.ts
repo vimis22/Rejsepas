@@ -20,7 +20,7 @@ export const useUserProfile = () => {
 
     const unsubscribe = onSnapshot(docRef, async (snapshot) => {
       if (snapshot.exists()) {
-        setProfile(snapshot.data() as UserData);
+        setProfile({ ...snapshot.data(), uid: snapshot.id } as UserData);
       } else {
         // Automatically create default profile if not found
         try {

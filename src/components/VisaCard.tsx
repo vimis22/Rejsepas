@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 interface VisaCardProps {
   country: string;
@@ -10,6 +11,8 @@ interface VisaCardProps {
 }
 
 export const VisaCard: React.FC<VisaCardProps> = ({ country, flag, startDate, endDate, status }) => {
+  const { colors } = useTheme();
+
   const getStatusColor = () => {
     if (status === 'ACTIVE' || status === 'VALID' || status === 'Active') return '#4CD964';
     switch (status) {
@@ -19,20 +22,20 @@ export const VisaCard: React.FC<VisaCardProps> = ({ country, flag, startDate, en
   };
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.card }]}>
       <View style={styles.header}>
         <Text style={styles.flag}>{flag}</Text>
-        <Text style={styles.country}>{country}</Text>
+        <Text style={[styles.country, { color: colors.text }]}>{country}</Text>
         <View style={[styles.statusDot, { backgroundColor: getStatusColor() }]} />
       </View>
       <View style={styles.details}>
         <View>
-          <Text style={styles.label}>Start Date</Text>
-          <Text style={styles.value}>{startDate}</Text>
+          <Text style={[styles.label, { color: colors.secondaryText }]}>Start Date</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{startDate}</Text>
         </View>
         <View>
-          <Text style={styles.label}>End Date</Text>
-          <Text style={styles.value}>{endDate}</Text>
+          <Text style={[styles.label, { color: colors.secondaryText }]}>End Date</Text>
+          <Text style={[styles.value, { color: colors.text }]}>{endDate}</Text>
         </View>
       </View>
     </View>

@@ -4,16 +4,18 @@ import { Navbar } from '../components/Navbar';
 import { RecordCard } from '../components/RecordCard';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { UserData } from '../logic/types';
+import { useTheme } from '../context/ThemeContext';
 
 export const RecordsScreen = () => {
   const { profile, loading } = useUserProfile();
+  const { colors } = useTheme();
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Navbar title="Travel Records" />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <Navbar title="Rejsehistorik" />
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#0047AB" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </View>
     );
@@ -23,8 +25,8 @@ export const RecordsScreen = () => {
   const records = userData?.records || [];
 
   return (
-    <View style={styles.container}>
-      <Navbar title="Travel Records" />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Navbar title="Rejsehistorik" />
       <FlatList
         data={records}
         keyExtractor={(item) => item.id}
@@ -35,10 +37,10 @@ export const RecordsScreen = () => {
             flag={item.flag}
             airport={item.airport}
             date={item.date}
-            type={item.type}
+            type={item.type === 'Departure' ? 'Afrejse' : 'Ankomst'}
           />
         )}
-        ListEmptyComponent={<Text style={styles.empty}>No travel records yet.</Text>}
+        ListEmptyComponent={<Text style={[styles.empty, { color: colors.secondaryText }]}>Ingen rejsehistorik endnu.</Text>}
       />
     </View>
   );

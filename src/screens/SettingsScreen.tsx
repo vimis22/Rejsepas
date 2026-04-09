@@ -1,11 +1,14 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Navbar } from '../components/Navbar';
-import { ChevronRight, Shield, Info, Phone, LogOut, Moon } from 'lucide-react-native';
+import { ChevronRight, Shield, Info, Phone, LogOut, Moon, Sun } from 'lucide-react-native';
 import { auth } from '../firebaseConfig';
 import { signOut } from 'firebase/auth';
+import { useTheme } from '../context/ThemeContext';
 
 export const SettingsScreen = ({ navigation }: any) => {
+  const { colors, theme, toggleTheme, isDark } = useTheme();
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -16,37 +19,57 @@ export const SettingsScreen = ({ navigation }: any) => {
     }
   };
 
+  const handleNavigation = (screenName: string) => {
+    console.log(`Navigating to ${screenName}`);
+    navigation.navigate(screenName);
+  };
+
   return (
-    <View style={styles.container}>
-      <Navbar title="Settings" />
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
+      <Navbar title="Indstillinger" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Preferences</Text>
-          <SettingItem icon={<Moon size={22} color="#555" />} label="Theme" value="Light" />
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Support</Text>
+          <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>Præferencer</Text>
           <SettingItem 
-            icon={<Phone size={22} color="#555" />} 
-            label="Contact Information" 
-            onPress={() => navigation.navigate('ContactInfo')} 
+            icon={isDark ? <Sun size={22} color={colors.secondaryText} /> : <Moon size={22} color={colors.secondaryText} />} 
+            label="Tema" 
+            value={theme === 'light' ? 'Lyst' : 'Mørkt'} 
+            onPress={toggleTheme}
+            colors={colors}
           />
-          <SettingItem icon={<Info size={22} color="#555" />} label="Terms & Conditions" />
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Security</Text>
-          <TouchableOpacity style={styles.dangerItem}>
-            <Shield size={22} color="#FF3B30" />
-            <Text style={styles.dangerText}>Report Stolen Passport</Text>
+          <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>Support</Text>
+          <SettingItem 
+            icon={<Phone size={22} color={colors.secondaryText} />} 
+            label="Kontaktinformation" 
+            onPress={() => handleNavigation('ContactInfo')} 
+            colors={colors}
+          />
+          <SettingItem 
+            icon={<Info size={22} color={colors.secondaryText} />} 
+            label="Handelsbetingelser" 
+            onPress={() => handleNavigation('Terms')}
+            colors={colors}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.secondaryText }]}>Sikkerhed</Text>
+          <TouchableOpacity 
+            style={[styles.dangerItem, { backgroundColor: colors.card, borderColor: isDark ? colors.danger : '#FFD6D6' }]} 
+            onPress={() => handleNavigation('ReportStolen')}
+          >
+            <Shield size={22} color={colors.danger} />
+            <Text style={[styles.dangerText, { color: colors.danger }]}>Anmeld stjålet pas</Text>
           </TouchableOpacity>
         </View>
 
         <View style={styles.logoutContainer}>
           <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
-            <LogOut size={22} color="#666" />
-            <Text style={styles.logoutText}>Log Out</Text>
+            <LogOut size={22} color={colors.secondaryText} />
+            <Text style={[styles.logoutText, { color: colors.secondaryText }]}>Log ud</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -54,18 +77,24 @@ export const SettingsScreen = ({ navigation }: any) => {
   );
 };
 
-const SettingItem = ({ icon, label, value, onPress }: any) => (
-  <TouchableOpacity style={styles.item} onPress={onPress} disabled={!onPress}>
-    <View style={styles.itemLeft}>
-      {icon}
-      <Text style={styles.itemLabel}>{label}</Text>
-    </View>
-    <View style={styles.itemRight}>
-      {value && <Text style={styles.itemValue}>{value}</Text>}
-      <ChevronRight size={20} color="#CCC" />
-    </View>
-  </TouchableOpacity>
-);
+const SettingItem = ({ icon, label, value, onPress, colors }: any) => {
+  return (
+    <TouchableOpacity 
+      style={[styles.item, { backgroundColor: colors.card }]} 
+      onPress={onPress} 
+      activeOpacity={0.7}
+    >
+      <View style={styles.itemLeft}>
+        {icon}
+        <Text style={[styles.itemLabel, { color: colors.text }]}>{label}</Text>
+      </View>
+      <View style={styles.itemRight}>
+        {value && <Text style={[styles.itemValue, { color: colors.secondaryText }]}>{value}</Text>}
+        <ChevronRight size={20} color={colors.border} />
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

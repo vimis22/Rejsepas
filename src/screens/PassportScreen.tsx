@@ -3,16 +3,18 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from 'react-nat
 import { Navbar } from '../components/Navbar';
 import { CreditCard } from 'lucide-react-native';
 import { useUserProfile } from '../hooks/useUserProfile';
+import { useTheme } from '../context/ThemeContext';
 
 export const PassportScreen = () => {
   const { profile, loading, error } = useUserProfile();
+  const { colors } = useTheme();
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Navbar title="Pasdetaljer" />
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#0047AB" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </View>
     );
@@ -21,7 +23,7 @@ export const PassportScreen = () => {
   const fallback = "Ikke angivet";
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Navbar title="Pasdetaljer" />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.passportCard}>
@@ -62,8 +64,8 @@ export const PassportScreen = () => {
         </View>
 
         <View style={styles.statusSection}>
-          <Text style={styles.statusTitle}>Passport Status</Text>
-          <View style={styles.statusBadge}>
+          <Text style={[styles.statusTitle, { color: colors.text }]}>Passport Status</Text>
+          <View style={[styles.statusBadge, { backgroundColor: '#E1F5E1', borderColor: '#A5D6A7' }]}>
             <Text style={styles.statusText}>
               {profile?.passportStatus === 'ACTIVE' ? "AKTIV / ACTIVE" : (profile?.passportStatus || fallback)}
             </Text>

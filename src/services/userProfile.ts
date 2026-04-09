@@ -1,6 +1,11 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db, auth } from '../firebaseConfig';
 import { Profile, UserData, Visa, Record } from '../logic/types';
+import { 
+  updateEmail, 
+  reauthenticateWithCredential, 
+  EmailAuthProvider 
+} from 'firebase/auth';
 
 const COLLECTION_NAME = 'users';
 
@@ -78,4 +83,36 @@ export const updateProfile = async (uid: string, data: Partial<UserData>) => {
 export const saveProfile = async (uid: string, data: UserData) => {
   const docRef = doc(db, COLLECTION_NAME, uid);
   await setDoc(docRef, data);
+};
+
+/**
+ * Updates the user's email in both Firebase Auth and Firestore.
+ * May require re-authentication.
+ */
+export const updateUserEmail = async (newEmail: string, passwordForReauth?: string) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Ingen bruger logget ind');
+
+  const oldEmail = user.email;
+  if (oldEmail === newEmail) return;
+
+  try {
+    // 1. Update Firebase Auth Email
+    await updateEmail(user, newEmail);
+    
+    // 2. Update Firestore
+    await updateProfile(user.uid, { email: newEmail });
+  } catch (error: any) {
+    // Handle re-authentication requirement
+    if (error.code === 'auth/requires-recent-login' && passwordForReauth) {
+      const credential = EmailAuthProvider.credential(oldEmail!, passwordForReauth);
+      await reauthenticateWithCredential(user, credential);
+      
+      // Retry update after re-auth
+      await updateEmail(user, newEmail);
+      await updateProfile(user.uid, { email: newEmail });
+    } else {
+      throw error;
+    }
+  }
 };

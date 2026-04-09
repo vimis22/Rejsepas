@@ -5,8 +5,10 @@ import { auth } from '../firebaseConfig';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { saveProfile } from '../services/userProfile';
 import { Profile, UserData, Visa, Record } from '../logic/types';
+import { useTheme } from '../context/ThemeContext';
 
 export const LoginScreen = ({ navigation }: any) => {
+  const { colors, isDark } = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
@@ -21,7 +23,7 @@ export const LoginScreen = ({ navigation }: any) => {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please enter both email and password');
+      Alert.alert('Fejl', 'Indtast venligst både e-mail og adgangskode');
       return;
     }
 
@@ -31,13 +33,13 @@ export const LoginScreen = ({ navigation }: any) => {
       navigation.replace('MainTabs');
     } catch (error: any) {
       console.error(error);
-      let errorMessage = 'Failed to sign in. Please check your credentials.';
+      let errorMessage = 'Kunne ikke logge ind. Tjek venligst dine oplysninger.';
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-        errorMessage = 'Invalid email or password.';
+        errorMessage = 'Ugyldig e-mail eller adgangskode.';
       } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Invalid email address format.';
+        errorMessage = 'Ugyldig e-mailformat.';
       }
-      Alert.alert('Login Error', errorMessage);
+      Alert.alert('Login fejl', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -45,12 +47,12 @@ export const LoginScreen = ({ navigation }: any) => {
 
   const handleRegister = async () => {
     if (!email || !password || !firstName || !surname || !dateOfBirth || !cprNumber || !passportNumber || !citizenship || !phoneNumber) {
-      Alert.alert('Error', 'Please fill in all passport information and account details.');
+      Alert.alert('Fejl', 'Udfyld venligst alle pasoplysninger og kontodetaljer.');
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert('Error', 'Password should be at least 6 characters');
+      Alert.alert('Fejl', 'Adgangskoden skal være på mindst 6 tegn');
       return;
     }
 
@@ -113,33 +115,33 @@ export const LoginScreen = ({ navigation }: any) => {
       
       await saveProfile(uid, fullProfile);
 
-      Alert.alert('Success', 'Account created successfully!');
+      Alert.alert('Succes', 'Konto oprettet korrekt!');
       navigation.replace('MainTabs');
     } catch (error: any) {
       console.error(error);
-      let errorMessage = 'Failed to create account.';
+      let errorMessage = 'Kunne ikke oprette konto.';
       if (error.code === 'auth/email-already-in-use') {
-        errorMessage = 'This email is already in use.';
+        errorMessage = 'Denne e-mail er allerede i brug.';
       } else if (error.code === 'auth/invalid-email') {
-        errorMessage = 'Invalid email address format.';
+        errorMessage = 'Ugyldig e-mailformat.';
       } else if (error.code === 'auth/weak-password') {
-        errorMessage = 'Password is too weak.';
+        errorMessage = 'Adgangskoden er for svag.';
       }
-      Alert.alert('Registration Error', errorMessage);
+      Alert.alert('Registreringsfejl', errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       {isRegistering && (
         <TouchableOpacity 
           style={styles.backButton} 
           onPress={() => setIsRegistering(false)}
           disabled={loading}
         >
-          <Text style={styles.backButtonText}>← Back to Login</Text>
+          <Text style={[styles.backButtonText, { color: colors.primary }]}>← Tilbage til Login</Text>
         </TouchableOpacity>
       )}
       <KeyboardAvoidingView 
@@ -148,31 +150,33 @@ export const LoginScreen = ({ navigation }: any) => {
       >
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.logoContainer}>
-            <View style={styles.logoCircle}>
+            <View style={[styles.logoCircle, { backgroundColor: colors.primary }]}>
                <Text style={styles.logoText}>RP</Text>
             </View>
-            <Text style={styles.appName}>Rejsepas</Text>
-            <Text style={styles.tagline}>Your Travel Companion</Text>
+            <Text style={[styles.appName, { color: colors.primary }]}>Rejsepas</Text>
+            <Text style={[styles.tagline, { color: colors.secondaryText }]}>Din rejseledsager</Text>
           </View>
 
           <View style={styles.form}>
             {isRegistering && (
               <>
-                <Text style={styles.sectionHeader}>Passport Information</Text>
+                <Text style={[styles.sectionHeader, { color: colors.primary }]}>Pasoplysninger</Text>
                 
-                <Text style={styles.label}>First Name</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Fornavn</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                   placeholder="John"
+                  placeholderTextColor={colors.secondaryText}
                   value={firstName}
                   onChangeText={setFirstName}
                   editable={!loading}
                 />
 
-                <Text style={styles.label}>Surname</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Efternavn</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                   placeholder="Doe"
+                  placeholderTextColor={colors.secondaryText}
                   value={surname}
                   onChangeText={setSurname}
                   editable={!loading}
@@ -180,20 +184,22 @@ export const LoginScreen = ({ navigation }: any) => {
 
                 <View style={styles.row}>
                   <View style={styles.flex1}>
-                    <Text style={styles.label}>Date of Birth</Text>
+                    <Text style={[styles.label, { color: colors.text }]}>Fødselsdato</Text>
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                       placeholder="01/01/1990"
+                      placeholderTextColor={colors.secondaryText}
                       value={dateOfBirth}
                       onChangeText={setDateOfBirth}
                       editable={!loading}
                     />
                   </View>
                   <View style={[styles.flex1, { marginLeft: 12 }]}>
-                    <Text style={styles.label}>CPR Number</Text>
+                    <Text style={[styles.label, { color: colors.text }]}>CPR nr.</Text>
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                       placeholder="010190-1234"
+                      placeholderTextColor={colors.secondaryText}
                       value={cprNumber}
                       onChangeText={setCprNumber}
                       editable={!loading}
@@ -203,20 +209,22 @@ export const LoginScreen = ({ navigation }: any) => {
 
                 <View style={styles.row}>
                   <View style={styles.flex1}>
-                    <Text style={styles.label}>Passport Number</Text>
+                    <Text style={[styles.label, { color: colors.text }]}>Pas nr.</Text>
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                       placeholder="DK12345678"
+                      placeholderTextColor={colors.secondaryText}
                       value={passportNumber}
                       onChangeText={setPassportNumber}
                       editable={!loading}
                     />
                   </View>
                   <View style={[styles.flex1, { marginLeft: 12 }]}>
-                    <Text style={styles.label}>Citizenship</Text>
+                    <Text style={[styles.label, { color: colors.text }]}>Nationalitet</Text>
                     <TextInput
-                      style={styles.input}
+                      style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                       placeholder="Dansk"
+                      placeholderTextColor={colors.secondaryText}
                       value={citizenship}
                       onChangeText={setCitizenship}
                       editable={!loading}
@@ -224,24 +232,26 @@ export const LoginScreen = ({ navigation }: any) => {
                   </View>
                 </View>
 
-                <Text style={styles.label}>Phone Number</Text>
+                <Text style={[styles.label, { color: colors.text }]}>Telefonnummer</Text>
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
                   placeholder="+45 12 34 56 78"
+                  placeholderTextColor={colors.secondaryText}
                   value={phoneNumber}
                   onChangeText={setPhoneNumber}
                   keyboardType="phone-pad"
                   editable={!loading}
                 />
 
-                <Text style={styles.sectionHeader}>Account Details</Text>
+                <Text style={[styles.sectionHeader, { color: colors.primary }]}>Kontodetaljer</Text>
               </>
             )}
 
-            <Text style={styles.label}>Email Address</Text>
+            <Text style={[styles.label, { color: colors.text }]}>E-mailadresse</Text>
             <TextInput
-              style={styles.input}
-              placeholder="example@email.com"
+              style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
+              placeholder="eksempel@email.com"
+              placeholderTextColor={colors.secondaryText}
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -249,10 +259,11 @@ export const LoginScreen = ({ navigation }: any) => {
               editable={!loading}
             />
 
-            <Text style={styles.label}>Password</Text>
+            <Text style={[styles.label, { color: colors.text }]}>Adgangskode</Text>
             <TextInput
-              style={styles.input}
+              style={[styles.input, { backgroundColor: colors.input, borderColor: colors.inputBorder, color: colors.text }]}
               placeholder="********"
+              placeholderTextColor={colors.secondaryText}
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -260,19 +271,19 @@ export const LoginScreen = ({ navigation }: any) => {
             />
 
             <Button 
-              title={isRegistering ? "Create Account" : "Login"} 
+              title={isRegistering ? "Opret konto" : "Log ind"} 
               onPress={isRegistering ? handleRegister : handleLogin} 
               style={styles.loginBtn}
               loading={loading}
             />
             
             <TouchableOpacity onPress={() => setIsRegistering(!isRegistering)} disabled={loading}>
-              <Text style={styles.toggleText}>
-                {isRegistering ? "Already have an account? Login" : "Don't have an account? Sign Up"}
+              <Text style={[styles.toggleText, { color: colors.secondaryText }]}>
+                {isRegistering ? "Har du allerede en konto? Log ind" : "Har du ikke en konto? Tilmeld dig"}
               </Text>
             </TouchableOpacity>
 
-            {!isRegistering && <Text style={styles.forgot}>Forgot Password?</Text>}
+            {!isRegistering && <Text style={[styles.forgot, { color: colors.primary }]}>Glemt adgangskode?</Text>}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>

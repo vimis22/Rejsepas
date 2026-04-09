@@ -1,5 +1,6 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 interface ButtonProps {
   title: string;
@@ -11,17 +12,19 @@ interface ButtonProps {
 }
 
 export const Button: React.FC<ButtonProps> = ({ title, onPress, variant = 'primary', style, loading, disabled }) => {
+  const { colors } = useTheme();
+
   const getBackgroundColor = () => {
-    if (disabled || loading) return '#A0A0A0';
+    if (disabled || loading) return colors.secondaryText;
     switch (variant) {
-      case 'secondary': return '#E0E0E0';
-      case 'danger': return '#FF3B30';
-      default: return '#0047AB';
+      case 'secondary': return colors.border;
+      case 'danger': return colors.danger;
+      default: return colors.primary;
     }
   };
 
   const getTextColor = () => {
-    return variant === 'secondary' ? '#333' : '#FFF';
+    return variant === 'secondary' ? colors.text : '#FFF';
   };
 
   return (

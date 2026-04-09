@@ -4,16 +4,18 @@ import { Navbar } from '../components/Navbar';
 import { VisaCard } from '../components/VisaCard';
 import { useUserProfile } from '../hooks/useUserProfile';
 import { UserData } from '../logic/types';
+import { useTheme } from '../context/ThemeContext';
 
 export const VisaScreen = () => {
   const { profile, loading, error } = useUserProfile();
+  const { colors } = useTheme();
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <Navbar title="Mine Visa" />
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#0047AB" />
+          <ActivityIndicator size="large" color={colors.primary} />
         </View>
       </View>
     );
@@ -23,7 +25,7 @@ export const VisaScreen = () => {
   const visas = userData?.visas || [];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <Navbar title="Mine Visa" />
       <FlatList
         data={visas}
@@ -38,7 +40,7 @@ export const VisaScreen = () => {
             status={item.status}
           />
         )}
-        ListEmptyComponent={<Text style={styles.empty}>Ingen visa fundet.</Text>}
+        ListEmptyComponent={<Text style={[styles.empty, { color: colors.secondaryText }]}>Ingen visa fundet.</Text>}
       />
     </View>
   );

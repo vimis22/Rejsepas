@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 
 interface RecordCardProps {
   country: string;
@@ -10,19 +11,21 @@ interface RecordCardProps {
 }
 
 export const RecordCard: React.FC<RecordCardProps> = ({ country, flag, airport, date, type }) => {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.card, borderLeftColor: colors.primary }]}>
       <View style={styles.header}>
         <Text style={styles.flag}>{flag}</Text>
         <View>
-          <Text style={styles.country}>{country}</Text>
-          <Text style={styles.airport}>{airport} Airport</Text>
+          <Text style={[styles.country, { color: colors.text }]}>{country}</Text>
+          <Text style={[styles.airport, { color: colors.secondaryText }]}>{airport} Airport</Text>
         </View>
       </View>
       <View style={styles.footer}>
-        <Text style={styles.date}>{date}</Text>
-        <View style={[styles.badge, { backgroundColor: type === 'Arrival' ? '#E8F5E9' : '#E3F2FD' }]}>
-          <Text style={[styles.badgeText, { color: type === 'Arrival' ? '#2E7D32' : '#1565C0' }]}>{type}</Text>
+        <Text style={[styles.date, { color: colors.text }]}>{date}</Text>
+        <View style={[styles.badge, { backgroundColor: type === 'Ankomst' ? '#E8F5E9' : '#E3F2FD' }]}>
+          <Text style={[styles.badgeText, { color: type === 'Ankomst' ? '#2E7D32' : '#1565C0' }]}>{type}</Text>
         </View>
       </View>
     </View>

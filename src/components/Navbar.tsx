@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, Platform, StatusBar } from 'react-native';
 import { ChevronLeft } from 'lucide-react-native';
+import { useTheme } from '../context/ThemeContext';
 
 interface NavbarProps {
   title: string;
@@ -8,19 +9,20 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ title, onBack }) => {
+  const { colors } = useTheme();
+
   return (
-    <View style={styles.container}>
-      <SafeAreaView>
-        <View style={styles.content}>
-          {onBack && (
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
-              <ChevronLeft color="#FFF" size={24} />
-            </TouchableOpacity>
-          )}
-          <Text style={styles.title}>{title}</Text>
-          <View style={styles.spacer} />
-        </View>
-      </SafeAreaView>
+    <View style={[styles.container, { backgroundColor: colors.primary }]}>
+      <View style={{ height: Platform.OS === 'android' ? StatusBar.currentHeight : 0 }} />
+      <View style={styles.content}>
+        {onBack && (
+          <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <ChevronLeft color="#FFF" size={24} />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.title}>{title}</Text>
+        <View style={styles.spacer} />
+      </View>
     </View>
   );
 };
@@ -28,14 +30,14 @@ export const Navbar: React.FC<NavbarProps> = ({ title, onBack }) => {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#0047AB',
-    paddingBottom: 16,
+    paddingBottom: 4,
   },
   content: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 16,
-    height: 56,
+    height: 64,
   },
   title: {
     color: '#FFF',

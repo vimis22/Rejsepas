@@ -37,6 +37,7 @@ export interface Record {
 }
 
 export interface UserData extends Profile {
+  uid?: string;
   visas?: Visa[];
   records?: Record[];
 }
